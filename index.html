@@ -4,25 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
     <title>Document</title>
 </head>
 <body>
 
     <div class="container">
-        <!-- <div id="startMenu">
+        <div class="menu active">
           <h1>Pong</h1>
-          <button id="startBtn">Start</button>
+          <button id="results">Start</button>
+          <div class="result-table" data-table>
+              last 10 games
+              
+          </div>
+          <button id="gameOnBtn">Start</button>
         </div>
-        <div id="pauseMenu">
-          <h1>Pause</h1>
-          <button id="continueBtn">Continue</button>
-          <button id="restartBtn">Restart</button>
-        </div> -->
+        
         <div id="gameOverLayout">
-          <h1 id="gameMessage"></h1>
-          <button id="againBtn">Try again</button>
+          <h1 id="gameOverMessage"></h1>
+          <button id="gameOverBtn">Try again</button>
         </div>
+        <div class="pause">
+            <h1>Pause</h1>
+            <button id="gameContinueBtn">Continue</button>
+            <button id="gameRestartBtn">Restart</button>
+          </div>
         <div id="playground">
             <canvas id="pCanvas" width="800" height="600"></canvas>
         </div>

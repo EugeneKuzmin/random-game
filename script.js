@@ -1,7 +1,13 @@
-
 const ballVelocity = 10
 const ballSize = 20
-const gameOverLayout = document.querySelector('gameOverLayout')
+const gameOverLayout = document.getElementById("gameOverLayout")
+const menu = document.querySelector(".menu")
+const pause = document.querySelector(".pause")
+const startGameBtn = document.getElementById("gameOnBtn")
+const gameOverBtn = document.getElementById("gameOverBtn")
+const gameContinueBtn = document.getElementById("gameContinueBtn")
+const gameRestartBtn = document.getElementById("gameRestartBtn")
+const gameOverMessage = document.getElementById("gameOverMessage")
 
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
@@ -9,7 +15,6 @@ function collides(obj1, obj2) {
            obj1.y < obj2.y + obj2.height &&
            obj1.y + obj1.height > obj2.y;
   }
-
 
 
 class LeftDino {
@@ -84,13 +89,12 @@ class Ball {
             this.x = this.game.width / 2;
             this.y = this.game.height / 2;
             if(this.x < 0){
-                if(this.game.leftDinoScore==3) this.game.stopGame()
+                if(this.game.leftDinoScore==3) this.game.stopGame('Congratulations! You won!!!')
                 else this.game.leftDinoScore++
             }else{
-                if(this.game.rightDinoScore==3) this.game.stopGame()
+                if(this.game.rightDinoScore==3) this.game.stopGame('You lost(((')
                 else this.game.rightDinoScore++
             }
-           
         }
 
         if (collides(this, this.game.leftDino)) {
@@ -120,29 +124,35 @@ class Score {
 } 
 
 class InputHandler {
-    constructor () {
+    constructor (game) {
+        console.log('keys cleaned');
          this.keys = []
+         this.game = game
          window.addEventListener('keydown',e=>{
             if(e.key === 'ArrowDown' && this.keys.indexOf(e.key) === -1||
             e.key === 'ArrowUp' && this.keys.indexOf(e.key) === -1
             ){
                 this.keys.push(e.key)
             }
+            if(e.key === ' ' && this.keys.indexOf('space') === -1){
+                this.keys.push('space')
+            }
         })
         
         window.addEventListener('keyup',e=>{
             if(e.key === 'ArrowDown'||
                 e.key === 'ArrowUp'
+                
             ){
+                console.log('cleaned');
+                console.log(this.keys)
                 this.keys.splice(this.keys.indexOf(e.key),1)
             }
+           
          })
     }
 }
 
-
-
-window.addEventListener('load', ()=>{
     const canvas = document.getElementById('pCanvas')
 
     canvas.width = window.innerWidth;
@@ -160,11 +170,12 @@ window.addEventListener('load', ()=>{
                 this.leftDino = new LeftDino(this)
                 this.rightDino = new RightDino(this)
                 this.ball = new Ball(this)
-                this.input = new InputHandler()
                 this.score = new Score(this)
                 this.playOn = true
+                this.input = new InputHandler(this)
             }
             update(){
+                this.checkPauseKey()
                 this.leftDino.update(this.input.keys)
                 this.rightDino.update()
                 this.ball.update()
@@ -176,17 +187,41 @@ window.addEventListener('load', ()=>{
                 this.score.draw(context)
                 this.ball.draw(context)
             }
-            startGame(){
+            startGame(cls){
+                cls.classList.remove('active')
                 this.playOn = true
                 animate()
             }
-            stopGame(){
+            continueGame(){
+                pause.classList.remove('active')
+                this.playOn = true
+                console.log('cleaned grom continue game');
+                if(this.input.keys.includes('space'))this.input.keys.splice(this.input.keys.indexOf('space'),1)
+                animate()
+            }
+            stopGame(msg){
                 this.playOn = false
+                gameOverMessage.textContent = msg
                 gameOverLayout.classList.add('active');
+            }
+            pauseGame(){
+                this.playOn = false
+                pause.classList.add('active')
+            }
+            checkPauseKey(){
+                // console.log('checking');
+                // console.log(this.input.keys);
+
+
+                if(this.input.keys.includes('space')){
+                    console.log('includes space');
+                    game.pauseGame()
+                }
+
             }
         }
 
-        const game = new Game(canvas.width,canvas.height)
+        let game = new Game(canvas.width,canvas.height)
         function animate(){
             ctx.clearRect(0,0,canvas.width,canvas.height)
             game.update()
@@ -195,6 +230,63 @@ window.addEventListener('load', ()=>{
                 requestAnimationFrame(animate)
             }
         }
-        animate()
+
+        const initTable = () => {
+            const results = [
+                {date:'10.10.2023',playerI:1,playerAI:3},
+                {date:'10.08.2023',playerI:3,playerAI:2},
+                {date:'10.01.2023',playerI:3,playerAI:1},
+            ]
+            results.forEach(x=>{
+                const table = document.querySelector('[data-table]')
+                const divDate = document.createElement('div')
+                const dateTxt = document.createTextNode(x.date)
+                divDate.appendChild(dateTxt)
+                
+                const divResultI = document.createElement('div')
+                divResultI.classList.add('table-row')
+                const divResultITxt = document.createTextNode(`I ${x.playerI}`)
+                divResultI.appendChild(divResultITxt)
+                
+                const divResultAI = document.createElement('div')
+                const divResultAITxt = document.createTextNode(`Dino AI ${x.playerAI}`)
+                divResultAI.appendChild(divResultAITxt)
+                
+                const divResults = document.createElement('div')
+                divResults.appendChild(divResultI)
+                divResults.appendChild(divResultAI)
+
+                const divRow = document.createElement('div')
+                divRow.classList.add('flex-centered')
+                divRow.classList.add('table-row')
+                divRow.appendChild(divDate)
+                divRow.appendChild(divResults)
+
+                table.appendChild(divRow)
+
+            })
+        }
+
+        initTable()
+
+startGameBtn.addEventListener('click',()=>{
+    game.startGame(menu)
+}
+)
+gameOverBtn.addEventListener('click',()=>{
+    game = new Game(canvas.width,canvas.height)
+    game.startGame(gameOverLayout)
     }
 )
+gameContinueBtn.addEventListener('click',()=>{
+    game.continueGame()
+    }
+)
+gameRestartBtn.addEventListener('click',()=>{
+    game = new Game(canvas.width,canvas.height)
+    game.startGame(pause)
+    }
+)
+
+
+
