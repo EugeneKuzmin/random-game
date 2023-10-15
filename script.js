@@ -94,10 +94,10 @@ class Ball {
             this.x = this.game.width / 2;
             this.y = this.game.height / 2;
             if(this.x < 0){
-                if(this.game.leftDinoScore==3) this.game.stopGame('Congratulations! You won!!!')
+                if(this.game.leftDinoScore>=3) this.game.stopGame('Congratulations! You won!!!')
                 else this.game.leftDinoScore++
             }else{
-                if(this.game.rightDinoScore==3) this.game.stopGame('You lost(((')
+                if(this.game.rightDinoScore>=1) this.game.stopGame('You lost(((')
                 else this.game.rightDinoScore++
             }
         }
@@ -206,6 +206,14 @@ class Game {
     }
     stopGame(msg){
         this.playOn = false
+        let rTbl = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
+        if(typeof rTbl !== "object") rTbl = []
+        const currDate = new Date()
+        const dateString = `${currDate.toLocaleDateString()} at ${currDate.getHours()}:${currDate.getMinutes()}`
+        rTbl.length?rTbl.unshift({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore}):rTbl.push({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore})
+        if(rTbl.length>10)rTbl.splice(10,rTbl.length-10)
+
+        localStorage.setItem('DinoPingPongGameReslts',JSON.stringify(rTbl))
         gameOverMessage.textContent = msg
         gameOverLayout.classList.add('active');
     }
@@ -237,39 +245,56 @@ function animate(){
 }
 
 const initTable = () => {
-    const results = [
-        {date:'10.10.2023',playerI:1,playerAI:3},
-        {date:'10.08.2023',playerI:3,playerAI:2},
-        {date:'10.01.2023',playerI:3,playerAI:1},
-    ]
-    results.forEach(x=>{
-        
-        const divDate = document.createElement('div')
-        const dateTxt = document.createTextNode(x.date)
-        divDate.appendChild(dateTxt)
-        
-        const divResultI = document.createElement('div')
-        divResultI.classList.add('table-row')
-        const divResultITxt = document.createTextNode(`I ${x.playerI}`)
-        divResultI.appendChild(divResultITxt)
-        
-        const divResultAI = document.createElement('div')
-        const divResultAITxt = document.createTextNode(`Dino AI ${x.playerAI}`)
-        divResultAI.appendChild(divResultAITxt)
-        
-        const divResults = document.createElement('div')
-        divResults.appendChild(divResultI)
-        divResults.appendChild(divResultAI)
+    let results = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
+    if(typeof results === "object") {
+    
+        results.forEach(x=>{
+            
+            const divDate = document.createElement('div')
+            divDate.classList.add('date-fs')
+            const dateTxt = document.createTextNode(x.date)
+            divDate.appendChild(dateTxt)
+            
+            const divResultI = document.createElement('div')
+            divResultI.classList.add('table-row')
+            divResultI.classList.add('flex-centered')
+            const divStrResultI = document.createElement('div')
+            const divStrResultScore = document.createElement('div')
+            const divResultITxt = document.createTextNode(`Your score`)
+            const divResultScoreTxt = document.createTextNode(`${x.playerI}`)
+            divStrResultI.appendChild(divResultITxt)
+            divStrResultScore.appendChild(divResultScoreTxt)
+            divResultI.appendChild(divStrResultI)
+            divResultI.appendChild(divStrResultScore)
+            
+            const divResultAI = document.createElement('div')
+            divResultAI.classList.add('table-row')
+            divResultAI.classList.add('flex-centered')
+            const divStrResultAI = document.createElement('div')
+            const divStrResultScoreAI = document.createElement('div')
+            const divResultAITxt = document.createTextNode(`Dino's AI score`)
+            const divResultScoreAITxt = document.createTextNode(`${x.playerAI}`)
+            divStrResultAI.appendChild(divResultAITxt)
+            divStrResultScoreAI.appendChild(divResultScoreAITxt)
+            divResultAI.appendChild(divStrResultAI)
+            divResultAI.appendChild(divStrResultScoreAI)
+            
+            const divResults = document.createElement('div')
+            divResults.appendChild(divResultI)
+            divResults.appendChild(divResultAI)
+            divResults.classList.add('score-layout')
 
-        const divRow = document.createElement('div')
-        divRow.classList.add('flex-centered')
-        divRow.classList.add('table-row')
-        divRow.appendChild(divDate)
-        divRow.appendChild(divResults)
+            const divRow = document.createElement('div')
+            divRow.classList.add('flex-centered')
+            divRow.classList.add('table-row')
+            divRow.appendChild(divDate)
+            divRow.appendChild(divResults)
 
-        table.appendChild(divRow)
+            table.appendChild(divRow)
 
-    })
+        })
+
+    }
 }
 
 initTable()
