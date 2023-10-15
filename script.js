@@ -8,6 +8,9 @@ const gameOverBtn = document.getElementById("gameOverBtn")
 const gameContinueBtn = document.getElementById("gameContinueBtn")
 const gameRestartBtn = document.getElementById("gameRestartBtn")
 const gameOverMessage = document.getElementById("gameOverMessage")
+const table = document.querySelector('[data-table]')
+const main = document.querySelector('main')
+const resultsContainer = document.querySelector('.result-table-container')
 
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
@@ -53,7 +56,9 @@ class RightDino {
         this.image = document.getElementById('rightDino')
     }
     update(){
-        this.y = this.game.ball.y
+        this.y = this.game.ball.y-this.height/2
+        if(this.y<0) this.y=0
+        if(this.y > this.game.height - this.height) this.y = this.game.height - this.height
 
         }
     draw(context){
@@ -153,129 +158,129 @@ class InputHandler {
     }
 }
 
-    const canvas = document.getElementById('pCanvas')
+const canvas = document.getElementById('pCanvas')
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const ctx = canvas.getContext('2d')
-    ctx.font = "200px 'Roboto', Arial";
-    ctx.textAlign = "center";
+canvas.width = main.clientWidth;
+canvas.height = main.clientHeight;
+const ctx = canvas.getContext('2d')
+ctx.font = "200px 'Roboto', Arial";
+ctx.textAlign = "center";
 
-        class Game {
-            constructor(width,height){
-                this.width = width
-                this.height = height
-                this.leftDinoScore = 0
-                this.rightDinoScore = 0
-                this.leftDino = new LeftDino(this)
-                this.rightDino = new RightDino(this)
-                this.ball = new Ball(this)
-                this.score = new Score(this)
-                this.playOn = true
-                this.input = new InputHandler(this)
-            }
-            update(){
-                this.checkPauseKey()
-                this.leftDino.update(this.input.keys)
-                this.rightDino.update()
-                this.ball.update()
-                
-            }
-            draw(context){
-                this.leftDino.draw(context)
-                this.rightDino.draw(context)
-                this.score.draw(context)
-                this.ball.draw(context)
-            }
-            startGame(cls){
-                cls.classList.remove('active')
-                this.playOn = true
-                animate()
-            }
-            continueGame(){
-                pause.classList.remove('active')
-                this.playOn = true
-                console.log('cleaned grom continue game');
-                if(this.input.keys.includes('space'))this.input.keys.splice(this.input.keys.indexOf('space'),1)
-                animate()
-            }
-            stopGame(msg){
-                this.playOn = false
-                gameOverMessage.textContent = msg
-                gameOverLayout.classList.add('active');
-            }
-            pauseGame(){
-                this.playOn = false
-                pause.classList.add('active')
-            }
-            checkPauseKey(){
-                // console.log('checking');
-                // console.log(this.input.keys);
+class Game {
+    constructor(width,height){
+        this.width = width
+        this.height = height
+        this.leftDinoScore = 0
+        this.rightDinoScore = 0
+        this.leftDino = new LeftDino(this)
+        this.rightDino = new RightDino(this)
+        this.ball = new Ball(this)
+        this.score = new Score(this)
+        this.playOn = true
+        this.input = new InputHandler(this)
+    }
+    update(){
+        this.checkPauseKey()
+        this.leftDino.update(this.input.keys)
+        this.rightDino.update()
+        this.ball.update()
+        
+    }
+    draw(context){
+        this.leftDino.draw(context)
+        this.rightDino.draw(context)
+        this.score.draw(context)
+        this.ball.draw(context)
+    }
+    startGame(cls){
+        cls.forEach(x=>x.classList.remove('active'))
+        this.playOn = true
+        animate()
+    }
+    continueGame(){
+        pause.classList.remove('active')
+        this.playOn = true
+        console.log('cleaned grom continue game');
+        if(this.input.keys.includes('space'))this.input.keys.splice(this.input.keys.indexOf('space'),1)
+        animate()
+    }
+    stopGame(msg){
+        this.playOn = false
+        gameOverMessage.textContent = msg
+        gameOverLayout.classList.add('active');
+    }
+    pauseGame(){
+        this.playOn = false
+        pause.classList.add('active')
+    }
+    checkPauseKey(){
+        // console.log('checking');
+        // console.log(this.input.keys);
 
 
-                if(this.input.keys.includes('space')){
-                    console.log('includes space');
-                    game.pauseGame()
-                }
-
-            }
+        if(this.input.keys.includes('space')){
+            console.log('includes space');
+            game.pauseGame()
         }
 
-        let game = new Game(canvas.width,canvas.height)
-        function animate(){
-            ctx.clearRect(0,0,canvas.width,canvas.height)
-            game.update()
-            game.draw(ctx)
-            if(game.playOn){
-                requestAnimationFrame(animate)
-            }
-        }
+    }
+}
 
-        const initTable = () => {
-            const results = [
-                {date:'10.10.2023',playerI:1,playerAI:3},
-                {date:'10.08.2023',playerI:3,playerAI:2},
-                {date:'10.01.2023',playerI:3,playerAI:1},
-            ]
-            results.forEach(x=>{
-                const table = document.querySelector('[data-table]')
-                const divDate = document.createElement('div')
-                const dateTxt = document.createTextNode(x.date)
-                divDate.appendChild(dateTxt)
-                
-                const divResultI = document.createElement('div')
-                divResultI.classList.add('table-row')
-                const divResultITxt = document.createTextNode(`I ${x.playerI}`)
-                divResultI.appendChild(divResultITxt)
-                
-                const divResultAI = document.createElement('div')
-                const divResultAITxt = document.createTextNode(`Dino AI ${x.playerAI}`)
-                divResultAI.appendChild(divResultAITxt)
-                
-                const divResults = document.createElement('div')
-                divResults.appendChild(divResultI)
-                divResults.appendChild(divResultAI)
+let game = new Game(canvas.width,canvas.height)
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+    game.update()
+    game.draw(ctx)
+    if(game.playOn){
+        requestAnimationFrame(animate)
+    }
+}
 
-                const divRow = document.createElement('div')
-                divRow.classList.add('flex-centered')
-                divRow.classList.add('table-row')
-                divRow.appendChild(divDate)
-                divRow.appendChild(divResults)
+const initTable = () => {
+    const results = [
+        {date:'10.10.2023',playerI:1,playerAI:3},
+        {date:'10.08.2023',playerI:3,playerAI:2},
+        {date:'10.01.2023',playerI:3,playerAI:1},
+    ]
+    results.forEach(x=>{
+        
+        const divDate = document.createElement('div')
+        const dateTxt = document.createTextNode(x.date)
+        divDate.appendChild(dateTxt)
+        
+        const divResultI = document.createElement('div')
+        divResultI.classList.add('table-row')
+        const divResultITxt = document.createTextNode(`I ${x.playerI}`)
+        divResultI.appendChild(divResultITxt)
+        
+        const divResultAI = document.createElement('div')
+        const divResultAITxt = document.createTextNode(`Dino AI ${x.playerAI}`)
+        divResultAI.appendChild(divResultAITxt)
+        
+        const divResults = document.createElement('div')
+        divResults.appendChild(divResultI)
+        divResults.appendChild(divResultAI)
 
-                table.appendChild(divRow)
+        const divRow = document.createElement('div')
+        divRow.classList.add('flex-centered')
+        divRow.classList.add('table-row')
+        divRow.appendChild(divDate)
+        divRow.appendChild(divResults)
 
-            })
-        }
+        table.appendChild(divRow)
 
-        initTable()
+    })
+}
+
+initTable()
 
 startGameBtn.addEventListener('click',()=>{
-    game.startGame(menu)
+    game.startGame([menu,resultsContainer])
 }
 )
 gameOverBtn.addEventListener('click',()=>{
     game = new Game(canvas.width,canvas.height)
-    game.startGame(gameOverLayout)
+    game.startGame([gameOverLayout])
     }
 )
 gameContinueBtn.addEventListener('click',()=>{
@@ -284,7 +289,7 @@ gameContinueBtn.addEventListener('click',()=>{
 )
 gameRestartBtn.addEventListener('click',()=>{
     game = new Game(canvas.width,canvas.height)
-    game.startGame(pause)
+    game.startGame([pause])
     }
 )
 
