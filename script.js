@@ -247,7 +247,7 @@ function animate(){
 
 const initTable = () => {
     let results = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
-    if(typeof results === "object") {
+    if(results!=null&&typeof results === "object") {
     
         results.forEach(x=>{
             
