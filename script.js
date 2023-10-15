@@ -1,4 +1,4 @@
-const ballVelocity = 10
+const ballVelocity = 20
 const ballSize = 20
 const gameOverLayout = document.getElementById("gameOverLayout")
 const menu = document.querySelector(".menu")
@@ -11,6 +11,7 @@ const gameOverMessage = document.getElementById("gameOverMessage")
 const table = document.querySelector('[data-table]')
 const main = document.querySelector('main')
 const resultsContainer = document.querySelector('.result-table-container')
+const resultTableBtn = document.getElementById('resultTableBtn')
 
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
@@ -23,7 +24,7 @@ function collides(obj1, obj2) {
 class LeftDino {
     constructor(game){
         this.game = game
-        this.width = 100
+        this.width = 90
         this.height = 100
         this.x = 0
         this.y = this.game.height/2
@@ -49,14 +50,14 @@ class LeftDino {
 class RightDino {
     constructor(game){
         this.game = game
-        this.width = 100
+        this.width = 90
         this.height = 100
         this.x = this.game.width-this.width
         this.y = this.game.height/2
         this.image = document.getElementById('rightDino')
     }
     update(){
-        this.y = this.game.ball.y-this.height/2
+        this.y = this.game.ball.y -this.height/2
         if(this.y<0) this.y=0
         if(this.y > this.game.height - this.height) this.y = this.game.height - this.height
 
@@ -75,12 +76,12 @@ class Ball {
         this.height = ballSize
         this.x = this.game.width/2
         this.y = this.game.height/2
-        this.velocityX = 3
-        this.velocityY = 3
+        this.velocityX = 5
+        this.velocityY = 5
     }
     update(){
-        this.x +=this.velocityX
-        this.y -=this.velocityY
+        this.x +=this.velocityX 
+        this.y -=this.velocityY 
 
         if (this.y < ballSize) {
             this.y = ballSize
@@ -94,11 +95,11 @@ class Ball {
             this.x = this.game.width / 2;
             this.y = this.game.height / 2;
             if(this.x < 0){
+                this.game.leftDinoScore++
                 if(this.game.leftDinoScore>=3) this.game.stopGame('Congratulations! You won!!!')
-                else this.game.leftDinoScore++
             }else{
-                if(this.game.rightDinoScore>=1) this.game.stopGame('You lost(((')
-                else this.game.rightDinoScore++
+                this.game.rightDinoScore++
+                if(this.game.rightDinoScore>=3) this.game.stopGame('You lost(((')
             }
         }
 
@@ -317,6 +318,11 @@ gameRestartBtn.addEventListener('click',()=>{
     game.startGame([pause])
     }
 )
+
+resultTableBtn.addEventListener('click',()=>{
+    table.hidden = !table.hidden
+
+})
 
 
 
