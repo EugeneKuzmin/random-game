@@ -208,7 +208,7 @@ class Game {
     stopGame(msg){
         this.playOn = false
         let rTbl = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
-        if(typeof rTbl !== "object") rTbl = []
+        if(typeof rTbl !== "object"||rTbl == null) rTbl = []
         const currDate = new Date()
         const dateString = `${currDate.toLocaleDateString()} at ${currDate.getHours()}:${currDate.getMinutes()}`
         rTbl.length?rTbl.unshift({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore}):rTbl.push({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore})
