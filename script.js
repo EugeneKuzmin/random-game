@@ -1,5 +1,7 @@
 const ballVelocity = 20
 const ballSize = 20
+const initialVelocity = 5
+const velocityIncreaseStep = 0.01
 const gameOverLayout = document.getElementById("gameOverLayout")
 const menu = document.querySelector(".menu")
 const pause = document.querySelector(".pause")
@@ -55,9 +57,10 @@ class RightDino {
         this.x = this.game.width-this.width
         this.y = this.game.height/2
         this.image = document.getElementById('rightDino')
+        this.speedAI = 0.02
     }
     update(){
-        this.y = this.game.ball.y -this.height/2
+        this.y += this.speedAI *  (this.game.ball.y - this.y)
         if(this.y<0) this.y=0
         if(this.y > this.game.height - this.height) this.y = this.game.height - this.height
 
@@ -76,38 +79,50 @@ class Ball {
         this.height = ballSize
         this.x = this.game.width/2
         this.y = this.game.height/2
-        this.velocityX = 5
-        this.velocityY = 5
-    }
+      
+        this.drctn = { x: 0 }
+        while (
+            Math.abs(this.drctn.x) <= 0.25 ||
+            Math.abs(this.drctn.x) >= 0.8
+        ) {
+            const heading = Math.random() * 2 * Math.PI
+            this.drctn = { x: Math.cos(heading), y: Math.sin(heading) }
+        }
+        this.velocity = initialVelocity
+        }
     update(){
-        this.x +=this.velocityX 
-        this.y -=this.velocityY 
+        this.x += this.drctn.x * this.velocity 
+        this.y += this.drctn.y * this.velocity 
+        this.velocity += velocityIncreaseStep
+        // console.log('x',this.x)
+        // console.log('y',this.y)
 
         if (this.y < ballSize) {
             this.y = ballSize
-            this.velocityY *= -1
+            this.drctn.y *= -1
         }else if (this.y + ballSize > this.game.height - ballSize) {
             this.y = this.game.height - ballSize * 2
-            this.velocityY *= -1
+            this.drctn.y *= -1
         }
 
         if ( (this.x < 0 || this.x > this.game.width)) {
-            this.x = this.game.width / 2;
-            this.y = this.game.height / 2;
-            if(this.x < 0){
+            
+            if(this.x <= 0){
                 this.game.leftDinoScore++
-                if(this.game.leftDinoScore>=3) this.game.stopGame('Congratulations! You won!!!')
+                if(this.game.leftDinoScore>=3) this.game.stopGame('You lost(((')
             }else{
                 this.game.rightDinoScore++
-                if(this.game.rightDinoScore>=3) this.game.stopGame('You lost(((')
+                if(this.game.rightDinoScore>=3) this.game.stopGame('Congratulations! You won!!!')
             }
+            this.x = this.game.width / 2;
+            this.y = this.game.height / 2;
         }
 
         if (collides(this, this.game.leftDino)) {
-            this.velocityX *= -1;
+            this.drctn.x *= -1;
             this.x = this.game.leftDino.x + this.game.leftDino.width;
         }else if (collides(this, this.game.rightDino)) {
-            this.velocityX *= -1;
+            this.drctn.x *= -1;
             this.x = this.game.rightDino.x - this.width;
         }
 
@@ -228,7 +243,6 @@ class Game {
 
 
         if(this.input.keys.includes('space')){
-            console.log('includes space');
             game.pauseGame()
         }
 
