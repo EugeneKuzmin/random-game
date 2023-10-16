@@ -14,7 +14,11 @@ const table = document.querySelector('[data-table]')
 const main = document.querySelector('main')
 const resultsContainer = document.querySelector('.result-table-container')
 const resultTableBtn = document.getElementById('resultTableBtn')
-const audio = new Audio("./sounds/mixkit-fast-blow-2144.wav")
+const audio = new Audio("./sounds/happytheme-22437.mp3")
+const hitSound = new Audio("./sounds/mixkit-fast-blow-2144.wav")
+const lostSound = new Audio("./sounds/mixkit-losing-bleeps-2026.wav")
+
+audio.volume = .33
 
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
@@ -105,6 +109,8 @@ class Ball {
         }
 
         if ( (this.x < 0 || this.x > this.game.width)) {
+            console.log('this.game.leftDinoScore',this.game.leftDinoScore)
+            console.log('this.game.leftDinoScore',this.game.rightDinoScore)
             
             if(this.x <= 0){
                 this.game.leftDinoScore++
@@ -113,25 +119,39 @@ class Ball {
                 this.game.rightDinoScore++
                 if(this.game.rightDinoScore>=3) this.game.stopGame('Congratulations! You won!!!')
             }
-            this.x = this.game.width / 2;
-            this.y = this.game.height / 2;
+            lostSound.play()
+            this.reset()
         }
 
         if (collides(this, this.game.leftDino)) {
             this.drctn.x *= -1;
             this.x = this.game.leftDino.x + this.game.leftDino.width;
-            audio.play()
+            hitSound.play()
 
         }else if (collides(this, this.game.rightDino)) {
             this.drctn.x *= -1;
             this.x = this.game.rightDino.x - this.width;
-            audio.play()
+            hitSound.play()
         }
 
     }
     draw(context){
         context.fillStyle = "black";
         context.fillRect(this.x,this.y,this.width,this.height)
+    }
+    reset(){
+        this.x = this.game.width / 2;
+        this.y = this.game.height / 2;
+        this.velocity = initialVelocity
+        this.drctn = { x: 0 }
+        while (
+            Math.abs(this.drctn.x) <= 0.25 ||
+            Math.abs(this.drctn.x) >= 0.8
+        ) {
+            const heading = Math.random() * 2 * Math.PI
+            this.drctn = { x: Math.cos(heading), y: Math.sin(heading) }
+        }
+   
     }
 }
 
@@ -213,6 +233,7 @@ class Game {
     startGame(cls){
         cls.forEach(x=>x.classList.remove('active'))
         this.playOn = true
+        audio.play()
         animate()
     }
     continueGame(){
@@ -223,6 +244,7 @@ class Game {
     }
     stopGame(msg){
         this.playOn = false
+        audio.pause()
         let rTbl = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
         if(typeof rTbl !== "object"||rTbl == null) rTbl = []
         const currDate = new Date()
@@ -237,6 +259,7 @@ class Game {
     }
     pauseGame(){
         this.playOn = false
+        audio.pause()
         pause.classList.add('active')
     }
     checkPauseKey(){
@@ -341,6 +364,11 @@ resultTableBtn.addEventListener('click',()=>{
     table.hidden = !table.hidden
 
 })
+
+audio.addEventListener('ended', function() {
+    this.currentTime = 0;
+    this.play();
+});
 
 
 
