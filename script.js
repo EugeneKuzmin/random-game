@@ -94,8 +94,6 @@ class Ball {
         this.x += this.drctn.x * this.velocity 
         this.y += this.drctn.y * this.velocity 
         this.velocity += velocityIncreaseStep
-        // console.log('x',this.x)
-        // console.log('y',this.y)
 
         if (this.y < ballSize) {
             this.y = ballSize
@@ -146,7 +144,7 @@ class Score {
 
 class InputHandler {
     constructor (game) {
-        console.log('keys cleaned');
+        // console.log('keys cleaned');
          this.keys = []
          this.game = game
          window.addEventListener('keydown',e=>{
@@ -165,8 +163,8 @@ class InputHandler {
                 e.key === 'ArrowUp'
                 
             ){
-                console.log('cleaned');
-                console.log(this.keys)
+                // console.log('cleaned');
+                // console.log(this.keys)
                 this.keys.splice(this.keys.indexOf(e.key),1)
             }
            
@@ -216,7 +214,6 @@ class Game {
     continueGame(){
         pause.classList.remove('active')
         this.playOn = true
-        console.log('cleaned grom continue game');
         if(this.input.keys.includes('space'))this.input.keys.splice(this.input.keys.indexOf('space'),1)
         animate()
     }
@@ -225,13 +222,14 @@ class Game {
         let rTbl = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
         if(typeof rTbl !== "object"||rTbl == null) rTbl = []
         const currDate = new Date()
-        const dateString = `${currDate.toLocaleDateString()} at ${currDate.getHours()}:${currDate.getMinutes()}`
+        const dateString = `${currDate.toLocaleDateString()} at ${currDate.getHours()}:${('0'+currDate.getMinutes()).slice(-2)}`
         rTbl.length?rTbl.unshift({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore}):rTbl.push({date:dateString,playerI:this.leftDinoScore,playerAI:this.rightDinoScore})
         if(rTbl.length>10)rTbl.splice(10,rTbl.length-10)
 
         localStorage.setItem('DinoPingPongGameReslts',JSON.stringify(rTbl))
         gameOverMessage.textContent = msg
         gameOverLayout.classList.add('active');
+        resultsContainer.classList.add('active');
     }
     pauseGame(){
         this.playOn = false
@@ -262,6 +260,7 @@ function animate(){
 const initTable = () => {
     let results = JSON.parse(localStorage.getItem('DinoPingPongGameReslts'))
     if(results!=null&&typeof results === "object") {
+        table.textContent = ''
     
         results.forEach(x=>{
             
@@ -320,7 +319,7 @@ startGameBtn.addEventListener('click',()=>{
 )
 gameOverBtn.addEventListener('click',()=>{
     game = new Game(canvas.width,canvas.height)
-    game.startGame([gameOverLayout])
+    game.startGame([gameOverLayout,resultsContainer])
     }
 )
 gameContinueBtn.addEventListener('click',()=>{
@@ -334,6 +333,7 @@ gameRestartBtn.addEventListener('click',()=>{
 )
 
 resultTableBtn.addEventListener('click',()=>{
+    initTable()
     table.hidden = !table.hidden
 
 })
