@@ -59,9 +59,19 @@ class LeftDino {
         if(this.y > this.game.height - this.height) this.y = this.game.height - this.height
 
     }
+    hit(){
+        this.dinoFrame = 3
+
+    }
+    racketDown(){
+        this.dinoFrame = 0
+        console.log
+    }
     handleMove() {
-          this.dinoFrame = (this.dinoFrame + 1) % this.dinoFrameCount
-          
+        if(this.dinoFrame !=3 ){
+            this.dinoFrame = (this.dinoFrame + 1) % this.dinoFrameCount
+        }
+
     }
     draw(context){
         context.fillStyle = "white";
@@ -101,6 +111,7 @@ class Ball {
         this.height = ballSize
         this.x = this.game.width/2
         this.y = this.game.height/2
+        this.hitBall = false
       
         this.drctn = { x: 0 }
         while (
@@ -137,10 +148,18 @@ class Ball {
             lostSound.play()
             this.reset()
         }
+        if ( (this.x - 10*ballSize >= this.game.leftDino.width&&this.hitBall)) {
+           this.game.leftDino.racketDown()
+           this.hitBall = false
+        }
 
         if (collides(this, this.game.leftDino)) {
+            this.game.leftDino.hit()
+            this.hitBall = true
             this.drctn.x *= -1;
+
             this.x = this.game.leftDino.x + this.game.leftDino.width;
+
             hitSound.play()
 
         }else if (collides(this, this.game.rightDino)) {
