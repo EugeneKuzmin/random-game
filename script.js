@@ -65,7 +65,6 @@ class LeftDino {
     }
     racketDown(){
         this.dinoFrame = 0
-        console.log
     }
     handleMove() {
         if(this.dinoFrame !=3 ){
@@ -202,7 +201,6 @@ class Score {
 
 class InputHandler {
     constructor (game) {
-        // console.log('keys cleaned');
          this.keys = []
          this.game = game
          window.addEventListener('keydown',e=>{
@@ -221,8 +219,6 @@ class InputHandler {
                 e.key === 'ArrowUp'
                 
             ){
-                // console.log('cleaned');
-                // console.log(this.keys)
                 this.keys.splice(this.keys.indexOf(e.key),1)
             }
            
@@ -297,9 +293,6 @@ class Game {
         pause.classList.add('active')
     }
     checkPauseKey(){
-        // console.log('checking');
-        // console.log(this.input.keys);
-
 
         if(this.input.keys.includes('space')){
             game.pauseGame()
@@ -383,11 +376,11 @@ gameOverBtn.addEventListener('click',()=>{
     game.startGame([gameOverLayout,resultsContainer])
     }
 )
-gameContinueBtn.addEventListener('click',()=>{
+gameContinueBtn.addEventListener('mousedown',()=>{
     game.continueGame()
     }
 )
-gameRestartBtn.addEventListener('click',()=>{
+gameRestartBtn.addEventListener('mousedown',()=>{
     game = new Game(canvas.width,canvas.height)
     game.startGame([pause])
     }
