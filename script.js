@@ -38,21 +38,38 @@ class LeftDino {
         this.image = document.getElementById('leftDino')
         this.speed = 0
         this.maxSpeed = 3
+        this.dinoFrame = 0
+        this.dinoFrameCount = 2
     }
     update(input){
         this.y +=this.speed
-        if(input.includes('ArrowUp')) this.speed -= this.maxSpeed
-        else if(input.includes('ArrowDown')) this.speed += this.maxSpeed
+        if(input.includes('ArrowUp')) 
+        {
+            this.speed -= this.maxSpeed
+            this.handleMove()
+        }
+
+        else if(input.includes('ArrowDown'))
+        {
+            this.speed += this.maxSpeed
+            this.handleMove()
+        }
         else this.speed = 0
         if(this.y<0) this.y=0
         if(this.y > this.game.height - this.height) this.y = this.game.height - this.height
 
-        }
+    }
+    handleMove() {
+          this.dinoFrame = (this.dinoFrame + 1) % this.dinoFrameCount
+          
+    }
     draw(context){
         context.fillStyle = "white";
         context.fillRect(this.x,this.y,this.width,this.height)
-        context.drawImage(this.image,0,0,this.width,this.height,this.x,this.y,this.width,this.height)
+        context.drawImage(this.image,this.width*this.dinoFrame,0,this.width,this.height,this.x,this.y,this.width,this.height)
     }
+
+
 }
 class RightDino {
     constructor(game){
@@ -109,8 +126,6 @@ class Ball {
         }
 
         if ( (this.x < 0 || this.x > this.game.width)) {
-            console.log('this.game.leftDinoScore',this.game.leftDinoScore)
-            console.log('this.game.leftDinoScore',this.game.rightDinoScore)
             
             if(this.x <= 0){
                 this.game.leftDinoScore++
